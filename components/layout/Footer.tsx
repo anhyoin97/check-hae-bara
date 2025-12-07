@@ -1,20 +1,81 @@
 // components/layout/Footer.tsx
 import React from "react";
-import { View } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter, usePathname, type Href } from "expo-router";
+
+type TabConfig = {
+  label: string;
+  path: Href;
+  icon: React.ComponentProps<typeof Ionicons>["name"];
+  activeIcon: React.ComponentProps<typeof Ionicons>["name"];
+};
+
+const tabs: TabConfig[] = [
+  {
+    label: "홈",
+    path: "/",
+    icon: "home-outline",
+    activeIcon: "home",
+  },
+  {
+    label: "예약",
+    path: "/reservation",
+    icon: "calendar-outline",
+    activeIcon: "calendar",
+  },
+  {
+    label: "설정",
+    path: "/settings",
+    icon: "settings-outline",
+    activeIcon: "settings",
+  },
+];
 
 export default function Footer() {
+  const router = useRouter();
+  const pathname = usePathname();
+
   return (
     <View
       style={{
-        height: 56,                // 기본 높이
-        borderTopWidth: 1,         // 위쪽 구분선
-        borderColor: "#eeeeee",
+        height: 62,
+        borderTopWidth: 1,
+        borderColor: "#e5e5e5",
+        flexDirection: "row",
         backgroundColor: "#ffffff",
       }}
     >
-      {/* 
-        footer 컨텐츠들
-      */}
+      {tabs.map((tab, index) => {
+        const isActive = pathname === tab.path;
+
+        return (
+          <TouchableOpacity
+            key={index}
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onPress={() => router.push(tab.path)}
+          >
+            <Ionicons
+              name={isActive ? tab.activeIcon : tab.icon}
+              size={22}
+              color={isActive ? "#007AFF" : "#444"}
+            />
+            <Text
+              style={{
+                fontSize: 11,
+                color: isActive ? "#007AFF" : "#444",
+                marginTop: 2,
+              }}
+            >
+              {tab.label}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 }
