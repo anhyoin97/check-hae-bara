@@ -2,11 +2,11 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter, usePathname, type Href } from "expo-router";
+import { useRouter, usePathname } from "expo-router";
 
 type TabConfig = {
   label: string;
-  path: Href;
+  path: string; 
   icon: React.ComponentProps<typeof Ionicons>["name"];
   activeIcon: React.ComponentProps<typeof Ionicons>["name"];
 };
@@ -57,7 +57,7 @@ export default function Footer() {
               justifyContent: "center",
               alignItems: "center",
             }}
-            onPress={() => router.push(tab.path)}
+            onPress={() => router.push(tab.path as any)}
           >
             <Ionicons
               name={isActive ? tab.activeIcon : tab.icon}
