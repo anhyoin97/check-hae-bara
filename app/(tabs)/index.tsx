@@ -25,7 +25,7 @@ export default function HomeScreen() {
   const day = today.getDate();
   const weekdayNames = ["일", "월", "화", "수", "목", "금", "토"] as const;
   const weekday = weekdayNames[today.getDay()];
-
+  
   // 오늘 해야 할 일 (교체, 유통기한)
   const todayTasks: TodayTask[] = [
     {
