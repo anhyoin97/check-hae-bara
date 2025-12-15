@@ -1,8 +1,11 @@
+// user.ts
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { db } from "./firebase"; 
+import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 
 const USER_ID_KEY = "checkhaebara_user_id";
 
-// 랜덤 ID 생성
 function generateUserId() {
   const random = Math.random().toString(36).substring(2, 10);
   const time = Date.now().toString(36);
@@ -10,14 +13,28 @@ function generateUserId() {
 }
 
 export async function getOrCreateUserId() {
-  // 이미 저장된 userId 있는지 확인
   const existingId = await AsyncStorage.getItem(USER_ID_KEY);
   if (existingId) {
     return existingId;
   }
 
-  // 없으면 새로 만들기
   const newId = generateUserId();
   await AsyncStorage.setItem(USER_ID_KEY, newId);
   return newId;
+}
+
+export async function registerUserIfNeeded(userId: string) {
+  const userRef = doc(db, "users", userId);
+  const snap = await getDoc(userRef);
+
+  // 이미 있으면 
+  if (snap.exists()) {
+    return;
+  }
+
+  // 없으면 새로 생성
+  await setDoc(userRef, {
+    createdAt: serverTimestamp(),
+    
+  });
 }

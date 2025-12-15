@@ -21,7 +21,7 @@ type UpcomingItem = {
 
 export default function HomeScreen() {
   const today = new Date();
-  const month = today.getMonth() + 1; // 0부터 시작이라 +1
+  const month = today.getMonth() + 1; // 0부터 시작, +1
   const day = today.getDate();
   const weekdayNames = ["일", "월", "화", "수", "목", "금", "토"] as const;
   const weekday = weekdayNames[today.getDay()];
@@ -81,7 +81,7 @@ export default function HomeScreen() {
         style={{
           width: 28,
           height: 3,
-          backgroundColor: "#007AFF", // 메인 색
+          backgroundColor: "#007AFF", // 메인 색상
           borderRadius: 2,
         }}
       />
