@@ -19,6 +19,12 @@ const tabs: TabConfig[] = [
     activeIcon: "home",
   },
   {
+    label: "물품등록",
+    path: "/add-item",
+    icon: "calendar-outline",
+    activeIcon: "calendar"
+  },
+  {
     label: "예약",
     path: "/reservation",
     icon: "calendar-outline",

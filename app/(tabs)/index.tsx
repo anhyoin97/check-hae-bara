@@ -1,7 +1,18 @@
 // app/(tabs)/index.tsx
-import React from "react";
-import { View, Text } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, Button } from "react-native";
 import CommonLayout from "../../components/layout/CommonLayout";
+import { getOrCreateUserId } from "../../lib/user";
+import { db } from "../../lib/firebase";
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  serverTimestamp,
+} from "firebase/firestore";
+import type { Product } from "../../types/product";
 
 type TaskType = "cycle" | "expiry";
 
@@ -25,8 +36,98 @@ export default function HomeScreen() {
   const day = today.getDate();
   const weekdayNames = ["일", "월", "화", "수", "목", "금", "토"] as const;
   const weekday = weekdayNames[today.getDay()];
-  
-  // 오늘 해야 할 일 (교체, 유통기한)
+
+  // 현재 기기의 userId, 이 유저의 상품 목록 상태
+  const [userId, setUserId] = useState<string | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // 화면 처음 진입할 때 userId 가져오고, 그 유저의 상품 목록 조회
+  useEffect(() => {
+    async function init() {
+      const id = await getOrCreateUserId();
+      setUserId(id);
+      console.log("Home userId:", id);
+
+      await loadMyProducts(id);
+    }
+
+    init();
+  }, []);
+
+  // ✅ 이 유저가 등록한 상품들만 Firestore에서 조회
+  async function loadMyProducts(idParam?: string) {
+    const uid = idParam ?? userId;
+    if (!uid) return;
+
+    try {
+      const q = query(
+        collection(db, "products"),
+        where("userId", "==", uid)
+      );
+
+      const snapshot = await getDocs(q);
+      const list: Product[] = [];
+
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data() as any;
+
+        const product: Product = {
+          id: docSnap.id,
+          userId: data.userId,
+          name: data.name,
+          type: data.type,
+          location: data.location,
+          category: data.category,
+          cycleDays: data.cycleDays,
+          lastHandledAt: data.lastHandledAt,
+          nextDueDate: data.nextDueDate,
+          expiryDate: data.expiryDate,
+          notifyBeforeDays: data.notifyBeforeDays,
+          isArchived: data.isArchived ?? false,
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt,
+        };
+
+        list.push(product);
+      });
+
+      setProducts(list);
+      console.log("내 상품 개수:", list.length);
+    } catch (e) {
+      console.log("상품 조회 에러:", e);
+    }
+  }
+
+  // ✅ 이 유저로 테스트 상품 추가 (실제 스키마에 맞게 저장)
+  async function addTestProduct() {
+    if (!userId) return;
+
+    try {
+      setLoading(true);
+
+      // 예: 교체 주기형 기저귀 한 개 추가 (v0 스키마 기준)
+      await addDoc(collection(db, "products"), {
+        userId,
+        name: "기저귀",
+        type: "cycle",           // "cycle" | "expiry"
+        location: "아기방",
+        category: "아기용품",
+        cycleDays: 2,            // 2일마다 갈기
+        isArchived: false,
+        createdAt: serverTimestamp(),
+      });
+
+      console.log("테스트 상품(기저귀) 저장 완료");
+      await loadMyProducts(userId); // 저장 후 내 상품 목록 다시 조회
+    } catch (e) {
+      console.log("상품 저장 에러:", e);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // 오늘 해야 할 일 (교체, 유통기한) — 지금은 하드코딩, 나중에 products 기반으로 바꿀 예정
   const todayTasks: TodayTask[] = [
     {
       id: "1",
@@ -51,7 +152,7 @@ export default function HomeScreen() {
     },
   ];
 
-  // 요약 카드용 더미 데이터
+  // 요약 카드용 더미 데이터 (나중에 products 기반으로 계산)
   const totalItems = 12;
   const upcomingWithin7Days = 5;
   const expiredCount = 2;
@@ -95,7 +196,7 @@ export default function HomeScreen() {
       headerRightButtons={["bell", "settings"]}
     >
       {/* 인사 + 날짜 */}
-      <View style={{ marginBottom: SECTION_GAP, marginTop: 10}}>
+      <View style={{ marginBottom: SECTION_GAP, marginTop: 10 }}>
         <Text style={{ fontSize: 18, fontWeight: "600", marginBottom: 8 }}>
           안녕하세요, 효인님
         </Text>
@@ -154,13 +255,6 @@ export default function HomeScreen() {
                   {task.name}
                 </Text>
               </View>
-
-              {/* 위치 다시 쓰고 싶으면 여기 위치 */}
-              {/* {task.location && (
-                <Text style={{ fontSize: 12, color: "#777" }}>
-                  {task.location}
-                </Text>
-              )} */}
             </View>
 
             <Text
@@ -284,7 +378,7 @@ export default function HomeScreen() {
       </View>
 
       {/* 다가오는 유통기한 */}
-      <View style={{ marginBottom: 0 }}>
+      <View style={{ marginBottom: SECTION_GAP }}>
         <SectionTitle>다가오는 유통기한</SectionTitle>
 
         {upcomingExpiryItems.map((item, idx) => (
@@ -311,6 +405,73 @@ export default function HomeScreen() {
             </Text>
           </View>
         ))}
+      </View>
+
+      {/* 개발용: 이 유저의 상품 저장/조회 테스트 섹션 */}
+      <View
+        style={{
+          marginTop: 24,
+          padding: 12,
+          borderRadius: 10,
+          backgroundColor: "#F0F9FF",
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 14,
+            fontWeight: "700",
+            marginBottom: 8,
+            color: "#007AFF",
+          }}
+        >
+          🔧 개발용: 내 상품 테스트
+        </Text>
+
+        <Text style={{ fontSize: 12, color: "#555", marginBottom: 8 }}>
+          userId: {userId ?? "로딩 중..."}
+        </Text>
+
+        <Button
+          title={loading ? "처리 중..." : "테스트 상품 추가"}
+          onPress={addTestProduct}
+          disabled={loading || !userId}
+        />
+
+        <View style={{ height: 8 }} />
+
+        <Button
+          title="내 상품 다시 불러오기"
+          onPress={() => loadMyProducts()}
+          disabled={loading || !userId}
+        />
+
+        <Text
+          style={{
+            marginTop: 12,
+            fontSize: 13,
+            fontWeight: "600",
+            marginBottom: 4,
+          }}
+        >
+          내 상품 목록 ({products.length}개)
+        </Text>
+
+        <View>
+          {products.map((item) => (
+            <View
+              key={item.id}
+              style={{
+                paddingVertical: 4,
+                borderBottomWidth: 0.5,
+                borderBottomColor: "#ddd",
+              }}
+            >
+              <Text style={{ fontSize: 13 }}>
+                {item.name} ({item.type})
+              </Text>
+            </View>
+          ))}
+        </View>
       </View>
     </CommonLayout>
   );
