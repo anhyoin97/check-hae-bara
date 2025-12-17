@@ -1,4 +1,4 @@
-# Check Haebara
+# Check Haebala
 
 ## Tech Stack
 - React Native 
