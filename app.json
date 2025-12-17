@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "check-hae-bara",
-    "slug": "check-hae-bara",
+    "name": "check-hae-bala",
+    "slug": "check-hae-bala",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "checkhaebara",
+    "scheme": "checkhaebala",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

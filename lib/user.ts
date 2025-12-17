@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { db } from "./firebase"; 
 import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 
-const USER_ID_KEY = "checkhaebara_user_id";
+const USER_ID_KEY = "checkhaebala_user_id";
 
 function generateUserId() {
   const random = Math.random().toString(36).substring(2, 10);
