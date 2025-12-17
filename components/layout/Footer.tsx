@@ -6,12 +6,24 @@ import { useRouter, usePathname } from "expo-router";
 
 type TabConfig = {
   label: string;
-  path: string; 
+  path: string;
   icon: React.ComponentProps<typeof Ionicons>["name"];
   activeIcon: React.ComponentProps<typeof Ionicons>["name"];
 };
 
 const tabs: TabConfig[] = [
+  {
+    label: "알림",
+    path: "/notifications",
+    icon: "notifications-outline",
+    activeIcon: "notifications",
+  },
+  {
+    label: "물품등록",
+    path: "/add-item",
+    icon: "add-circle-outline",
+    activeIcon: "add-circle",
+  },
   {
     label: "홈",
     path: "/",
@@ -19,22 +31,16 @@ const tabs: TabConfig[] = [
     activeIcon: "home",
   },
   {
-    label: "물품등록",
-    path: "/add-item",
-    icon: "calendar-outline",
-    activeIcon: "calendar"
-  },
-  {
-    label: "예약",
-    path: "/reservation",
+    label: "일정",
+    path: "/schedule",
     icon: "calendar-outline",
     activeIcon: "calendar",
   },
   {
-    label: "설정",
-    path: "/settings",
-    icon: "settings-outline",
-    activeIcon: "settings",
+    label: "마이",
+    path: "/my",
+    icon: "person-outline",
+    activeIcon: "person",
   },
 ];
 
@@ -53,7 +59,13 @@ export default function Footer() {
       }}
     >
       {tabs.map((tab, index) => {
-        const isActive = pathname === tab.path;
+        const isActive =
+          tab.path === "/"
+            ? pathname === "/" // 홈은 정확히
+            : pathname.startsWith(tab.path);
+
+        const isCenterHome = tab.path === "/";
+        const iconSize = isCenterHome ? 24 : 22;
 
         return (
           <TouchableOpacity
@@ -64,10 +76,11 @@ export default function Footer() {
               alignItems: "center",
             }}
             onPress={() => router.push(tab.path as any)}
+            activeOpacity={0.8}
           >
             <Ionicons
               name={isActive ? tab.activeIcon : tab.icon}
-              size={22}
+              size={iconSize}
               color={isActive ? "#007AFF" : "#444"}
             />
             <Text

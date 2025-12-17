@@ -191,7 +191,7 @@ export default function HomeScreen() {
 
   return (
     <CommonLayout
-      title="체크해바라"
+      title="CHECKHABALA"
       headerAlign="center"
       headerRightButtons={["bell", "settings"]}
     >
