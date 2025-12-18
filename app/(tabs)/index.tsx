@@ -55,7 +55,7 @@ export default function HomeScreen() {
     init();
   }, []);
 
-  // ✅ 이 유저가 등록한 상품들만 Firestore에서 조회
+  // 해당 유저가 등록한 상품들만 Firestore에서 조회
   async function loadMyProducts(idParam?: string) {
     const uid = idParam ?? userId;
     if (!uid) return;
@@ -99,35 +99,7 @@ export default function HomeScreen() {
     }
   }
 
-  // ✅ 이 유저로 테스트 상품 추가 (실제 스키마에 맞게 저장)
-  async function addTestProduct() {
-    if (!userId) return;
-
-    try {
-      setLoading(true);
-
-      // 예: 교체 주기형 기저귀 한 개 추가 (v0 스키마 기준)
-      await addDoc(collection(db, "products"), {
-        userId,
-        name: "기저귀",
-        type: "cycle",           // "cycle" | "expiry"
-        location: "아기방",
-        category: "아기용품",
-        cycleDays: 2,            // 2일마다 갈기
-        isArchived: false,
-        createdAt: serverTimestamp(),
-      });
-
-      console.log("테스트 상품(기저귀) 저장 완료");
-      await loadMyProducts(userId); // 저장 후 내 상품 목록 다시 조회
-    } catch (e) {
-      console.log("상품 저장 에러:", e);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  // 오늘 해야 할 일 (교체, 유통기한) — 지금은 하드코딩, 나중에 products 기반으로 바꿀 예정
+  // 오늘 해야 할 일 (교체, 유통기한)
   const todayTasks: TodayTask[] = [
     {
       id: "1",
@@ -405,73 +377,6 @@ export default function HomeScreen() {
             </Text>
           </View>
         ))}
-      </View>
-
-      {/* 개발용: 이 유저의 상품 저장/조회 테스트 섹션 */}
-      <View
-        style={{
-          marginTop: 24,
-          padding: 12,
-          borderRadius: 10,
-          backgroundColor: "#F0F9FF",
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 14,
-            fontWeight: "700",
-            marginBottom: 8,
-            color: "#007AFF",
-          }}
-        >
-          🔧 개발용: 내 상품 테스트
-        </Text>
-
-        <Text style={{ fontSize: 12, color: "#555", marginBottom: 8 }}>
-          userId: {userId ?? "로딩 중..."}
-        </Text>
-
-        <Button
-          title={loading ? "처리 중..." : "테스트 상품 추가"}
-          onPress={addTestProduct}
-          disabled={loading || !userId}
-        />
-
-        <View style={{ height: 8 }} />
-
-        <Button
-          title="내 상품 다시 불러오기"
-          onPress={() => loadMyProducts()}
-          disabled={loading || !userId}
-        />
-
-        <Text
-          style={{
-            marginTop: 12,
-            fontSize: 13,
-            fontWeight: "600",
-            marginBottom: 4,
-          }}
-        >
-          내 상품 목록 ({products.length}개)
-        </Text>
-
-        <View>
-          {products.map((item) => (
-            <View
-              key={item.id}
-              style={{
-                paddingVertical: 4,
-                borderBottomWidth: 0.5,
-                borderBottomColor: "#ddd",
-              }}
-            >
-              <Text style={{ fontSize: 13 }}>
-                {item.name} ({item.type})
-              </Text>
-            </View>
-          ))}
-        </View>
       </View>
     </CommonLayout>
   );
