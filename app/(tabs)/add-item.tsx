@@ -6,6 +6,7 @@ import { db } from "../../lib/firebase";
 import { getOrCreateUserId } from "../../lib/user";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import type { Product } from "../../types/product";
+import { common } from "../../styles/common";
 
 type ReminderMode = "NONE" | "REPEAT" | "ONCE";
 type RepeatType = "DAILY" | "WEEKLY" | "MONTHLY_DATE";
@@ -541,19 +542,8 @@ export default function AddItemScreen() {
   return (
     <CommonLayout title="물품 등록" headerAlign="center" headerRightButtons={[]}>
       <View style={{ marginTop: 16 }}>
-        <Text style={{ fontSize: 14, color: "#888", marginBottom: 4 }}>물품 이름</Text>
-        <TextInput
-          value={name}
-          onChangeText={setName}
-          placeholder="예: 기저귀, 우유, 가습기 필터..."
-          style={{
-            borderWidth: 1,
-            borderColor: "#ddd",
-            borderRadius: 8,
-            paddingHorizontal: 12,
-            paddingVertical: 8,
-          }}
-        />
+        <Text style={common.label}>물품 이름</Text>
+        <TextInput style={common.input} />
 
         <View style={{ height: 16 }} />
 
