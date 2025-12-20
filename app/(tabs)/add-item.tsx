@@ -6,7 +6,7 @@ import { db } from "../../lib/firebase";
 import { getOrCreateUserId } from "../../lib/user";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import type { Product } from "../../types/product";
-import { common } from "../../styles/common";
+import { commonStyles } from "../../styles/common";
 
 type ReminderMode = "NONE" | "REPEAT" | "ONCE";
 type RepeatType = "DAILY" | "WEEKLY" | "MONTHLY_DATE";
@@ -542,8 +542,8 @@ export default function AddItemScreen() {
   return (
     <CommonLayout title="물품 등록" headerAlign="center" headerRightButtons={[]}>
       <View style={{ marginTop: 16 }}>
-        <Text style={common.label}>물품 이름</Text>
-        <TextInput style={common.input} />
+        <Text style={commonStyles.listItemName}>물품 이름</Text>
+        <TextInput style={commonStyles.listDdayBase} />
 
         <View style={{ height: 16 }} />
 
