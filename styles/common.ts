@@ -92,7 +92,7 @@ export const commonStyles = StyleSheet.create({
   sectionTitleBar: {
     width: 28,
     height: 3,
-    backgroundColor: COLORS.primary, // ✅ 메인 색상은 여기 “서명”으로만
+    backgroundColor: COLORS.primary, 
     borderRadius: 2,
   },
 
@@ -150,7 +150,7 @@ export const commonStyles = StyleSheet.create({
   summaryGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 12, // RN 버전에 따라 미지원일 수 있음(그때는 index에서 justifyContent 방식으로)
+    gap: 12, 
   },
 
   summaryCardLg: {
@@ -239,7 +239,7 @@ export const commonStyles = StyleSheet.create({
     letterSpacing: -0.2,
   },
 
-  // (구버전 대비 유지용) list rows
+  
   listRow: {
     paddingVertical: 10,
     flexDirection: "row",
@@ -287,7 +287,7 @@ export const commonStyles = StyleSheet.create({
     color: COLORS.text,
   },
 
-  // 테이블 헤더 느낌
+
   detailTableHeader: {
     flexDirection: "row",
     alignItems: "center",
@@ -318,7 +318,7 @@ export const commonStyles = StyleSheet.create({
     borderBottomColor: "#F0F0F0",
   },
 
-  // 컬럼들
+  
   detailName: {
     flex: 1.2,
     fontSize: 14,
