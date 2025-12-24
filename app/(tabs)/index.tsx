@@ -1,6 +1,6 @@
 // app/(tabs)/index.tsx
 import React, { useEffect, useMemo, useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Button } from "react-native";
 import CommonLayout from "../../components/layout/CommonLayout";
 import { getOrCreateUserId } from "../../lib/user";
 import { db } from "../../lib/firebase";
@@ -8,6 +8,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import type { Product } from "../../types/product";
 
 import { COLORS, SPACING, commonStyles } from "../../styles/common";
+import { fireTestNotiNow, requestNotiPermission } from "../../lib/notifications";
 
 type TaskType = "cycle" | "expiry";
 
@@ -265,6 +266,17 @@ export default function HomeScreen() {
           오늘은 {month}월 {day}일 {weekday}요일이에요.{"\n"}
           오늘 하루도 교체해야할 상품을 확인해볼까요?
         </Text>
+      </View>
+
+      <View style={{ padding: 16 }}>
+        <Button
+          title="테스트 알림 즉시 보내기"
+          onPress={async () => {
+            const ok = await requestNotiPermission();
+            if (!ok) return;
+            await fireTestNotiNow();
+          }}
+        />
       </View>
 
       {/* 오늘 해야 할 일 */}

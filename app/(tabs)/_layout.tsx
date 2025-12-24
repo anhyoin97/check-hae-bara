@@ -2,10 +2,14 @@
 import { Slot } from "expo-router";
 import { useEffect } from "react";
 import { getOrCreateUserId, registerUserIfNeeded } from "../../lib/user";
+import * as Notifications from "expo-notifications";
+import { setupNotificationHandler } from "../../lib/notificationHandler";
 
 export default function RootLayout() {
 
   useEffect(() => {
+    setupNotificationHandler();
+
     async function init() {
       const id = await getOrCreateUserId();
 
@@ -16,6 +20,6 @@ export default function RootLayout() {
 
     init();
   }, []);
-
+  
   return <Slot />;
 }
