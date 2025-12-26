@@ -1,25 +1,32 @@
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "./firebase"; 
-import { rebuildSummaryNotificationsNext30Days, CheckHaebalaItem } from "./notiScheduler";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "./firebase";
+import { rebuildSummaryNotificationsFromProducts, ProductDoc } from "./notiScheduler";
 
-/**
- * Firestore에서 내 물품을 가져와서
- * 앞으로 30일치 요약 알림을 재생성.
- */
 export async function syncSummaryNotisFromFirestore(userId: string) {
-  const colRef = collection(db, "users", userId, "items");
+  const q = query(
+    collection(db, "products"),
+    where("userId", "==", userId),
+    where("isArchived", "==", false)
+  );
 
-  const snap = await getDocs(colRef);
+  const snap = await getDocs(q);
 
-  const items: CheckHaebalaItem[] = snap.docs.map((d) => {
+  const products: ProductDoc[] = snap.docs.map((d) => {
     const data = d.data() as any;
     return {
       id: d.id,
-      name: data.name,
-      nextReplaceAt: data.nextReplaceAt ?? null,
-      expiryAt: data.expiryAt ?? null,
+      userId: data.userId,
+      type: data.type,
+      isArchived: data.isArchived,
+      expiryDate: data.expiryDate,
+      reminder: data.reminder,
+      cycleDays: data.cycleDays,
     };
   });
 
-  return await rebuildSummaryNotificationsNext30Days(items);
+  console.log("[CHB] products fetched:", products.length);
+
+  const result = await rebuildSummaryNotificationsFromProducts(products);
+  console.log("[CHB] rebuild result:", result);
+  return result;
 }

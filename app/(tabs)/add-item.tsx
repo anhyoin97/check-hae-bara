@@ -7,6 +7,7 @@ import { getOrCreateUserId } from "../../lib/user";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import type { Product } from "../../types/product";
 import { commonStyles } from "../../styles/common";
+import { syncSummaryNotisFromFirestore } from "../../lib/notiSync";
 
 type ReminderMode = "NONE" | "REPEAT" | "ONCE";
 type RepeatType = "DAILY" | "WEEKLY" | "MONTHLY_DATE";
@@ -510,6 +511,10 @@ export default function AddItemScreen() {
     try {
       setSaving(true);
       await addDoc(collection(db, "products"), payload);
+      
+      // 물품 저장 후 앞으로 30일 알림 재생성
+      await syncSummaryNotisFromFirestore(userId);
+
       Alert.alert("완료", "물품이 등록되었습니다.");
 
       // 폼 초기화
@@ -543,7 +548,12 @@ export default function AddItemScreen() {
     <CommonLayout title="물품 등록" headerAlign="center" headerRightButtons={[]}>
       <View style={{ marginTop: 16 }}>
         <Text style={commonStyles.listItemName}>물품 이름</Text>
-        <TextInput style={commonStyles.listDdayBase} />
+        <TextInput
+          value={name}
+          onChangeText={setName}
+          placeholder="예: 칫솔"
+          style={commonStyles.listDdayBase}
+        />
 
         <View style={{ height: 16 }} />
 
