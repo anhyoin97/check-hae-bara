@@ -267,8 +267,8 @@ export default function HomeScreen() {
           오늘 하루도 교체해야할 상품을 확인해볼까요?
         </Text>
       </View>
-
-      <View style={{ padding: 16 }}>
+      
+      {/* <View style={{ padding: 16 }}>
         <Button
           title="테스트 알림 즉시 보내기"
           onPress={async () => {
@@ -277,7 +277,7 @@ export default function HomeScreen() {
             await fireTestNotiNow();
           }}
         />
-      </View>
+      </View> */}
 
       {/* 오늘 해야 할 일 */}
       <View style={commonStyles.section}>
